@@ -1,4 +1,4 @@
-NB. COVID19 testing simulation for schools, including omparison between Blue and Red school given actual disease prevalence.
+NB. COVID19 testing simulation for schools, including comparison between Blue and Red school given actual disease prevalence.
 NB.
 NB. Change where needed:
 NB. 
