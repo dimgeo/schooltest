@@ -17,7 +17,7 @@ NB.    	     		    in a matrix with true positives, false negatives, true negati
 NB. psim red		 -- returns the totals in a boxed frame
 NB. 1001 ltest blue      -- runs a simulation of 1001 schools of the blue type (low prevalence)
 
-NB. > 1001 ltest blue
+NB. > 1000 ltest blue
 NB. ┌────┬───┬──────┬────┐
 NB. │TP  │FN │TN    │FP  │
 NB. ├────┼───┼──────┼────┤
@@ -72,7 +72,7 @@ NB. Run 5000 ltest red
 
 
 ltest=: dyad define
-times=. x
+times=. >:x
 school=. y
 bigarray=.  ((#school),4) $ 0
 while. times > 1 do.
