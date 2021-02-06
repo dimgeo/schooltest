@@ -15,7 +15,7 @@ NB. Examples:
 NB. simulate red         -- runs a test on all 'schoolchildren' of school red and returns the result for each candidate
 NB.    	     		    in a matrix with true positives, false negatives, true negatives and false positives
 NB. psim red		 -- returns the totals in a boxed frame
-NB. 1001 ltest blue      -- runs a simulation of 1001 schools of the blue type (low prevalence)
+NB. 1000 ltest blue      -- runs a simulation of 1000 schools of the blue type (low prevalence)
 
 NB. > 1000 ltest blue
 NB. ┌────┬───┬──────┬────┐
