@@ -54,7 +54,7 @@ pp=. 0 1      NB. false negative
 end.
 end.
 
-if. y = 0) do.
+if. y = 0 do.
 pp =. 0 0
 specprob=: ? 1000
 if. (specprob > (spec*1000)) do.
