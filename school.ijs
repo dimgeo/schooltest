@@ -15,7 +15,7 @@ NB. Examples:
 NB. simulate red         -- runs a test on all 'schoolchildren' of school red and returns the result for each candidate
 NB.    	     		    in a matrix with true positives, false negatives, true negatives and false positives
 NB. psim red		 -- returns the totals in a boxed frame
-NB. 1001 ltest blue      -- runs a simulation of 1001 schools of the blue typ e(low prevalence)
+NB. 1001 ltest blue      -- runs a simulation of 1001 schools of the blue type (low prevalence)
 
 NB. > 1001 ltest blue
 NB. ┌────┬───┬──────┬────┐
@@ -28,7 +28,7 @@ NB. └────┴───┴──────┴────┘
 
 NB. ----------- setup
 
-blue=: 1 (7 ? 1000) } 1000 # 0    NB. a list of 1000 zeros with 4 1's at random positions
+blue=: 1 (7 ? 1000) } 1000 # 0    NB. a list of 1000 zeros with 7 1's at random positions
 red=: 1 (48 ? 800) } 800  # 0     NB. a list of 800 zeros with 48 1's at random positions
 
 sens=: 0.95
@@ -50,7 +50,7 @@ pp=. 0 1      NB. false negative
 end.
 end.
 
-if. (y = 0) do.
+if. y = 0) do.
 pp =. 0 0
 specprob=: ? 1000
 if. (specprob > (spec*1000)) do.
@@ -69,7 +69,7 @@ NB. ------------------- experiments
 
 NB. What are the results you can expect when testing 5000 schools of the 'red' kind?
 NB. Run 5000 ltest red
-NB. Sample result: 
+
 
 ltest=: dyad define
 times=. x
@@ -85,13 +85,8 @@ header,: <"0 +/bigarray
 
 
 
-NB. What are the results you can expect when testing 5000 schools of the 'blue' kind?
 
-
-
-
-
-NB. ------------------- output functions
+NB. ------------------- sample output functions (todo)
 
 psim=: monad define				NB. print totals (new simulation)				    
 header=. 'TP';'FN';'TN';'FP'
