@@ -24,8 +24,12 @@ psim red	        	 -- returns the totals in a boxed frame
 
 1001 ltest blue
  ┌────┬───┬──────┬────┐
+ 
  │TP  │FN │TN    │FP  │
+ 
  ├────┼───┼──────┼────┤
+ 
  │6631│369│991969│1031│
+ 
  └────┴───┴──────┴────┘
 
