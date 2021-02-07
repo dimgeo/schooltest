@@ -35,7 +35,7 @@ NB. -------------------- Infection factor from false negatives
 infie=: 3 : '(1000, 1000) $ 1 ((>. R * 1 rap"0 2 y) {. (I. (,y=3))) } ,y'
 
 
-NB. -------------------- matrix of 1000 schools x 1000 pupils, healty=3, sick=1
+NB. -------------------- matrix of 1000 schools x 1000 pupils, healthy=3, sick=1
 
 allschools =: (?1000#1000)|."0 1  (1 ((prev*1000)? 1000)}"1 1  ( 1000 1000 $ 3))
 
