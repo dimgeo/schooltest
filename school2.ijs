@@ -52,8 +52,8 @@ negtest=:  3 : '3:`4: @. (=&1)"0 (?1000) > (spec *1000 )'
 
 NB. -------------------- Test 1000000 school children
 NB. 			 Usage: testround allschools 
-NB.			 Gerund function, visits each matrix cell, checks wether in quarantaine, tp, fn, tn, fp
-NB. 			 If tp(1) or tn(3) (posterior, after quarantaine and consolidation) runs tests, or else returns input
+NB.			 Gerund function, visits each matrix cell, checks wether in quarantine, tp, fn, tn, fp
+NB. 			 If tp(1) or tn(3) (posterior, after quarantine and consolidation) runs tests, or else returns input
 
 testround=:  0:`(postest)`(])`(negtest)`(])  @. (])"0                                     
 
