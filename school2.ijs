@@ -8,7 +8,7 @@ NB. -------------------- setup PCR simulation parameters and initial prevalence
 spec=: 0.998
 sens=: 0.95
 prev=: 0.007
-R=: 10
+R=: 10        NB. No, not that R
 
 
 
