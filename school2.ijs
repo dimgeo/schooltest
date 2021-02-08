@@ -54,7 +54,7 @@ nnrap =: 3 : '0 1 2 3 4 rap"0 2  y'   NB. easy full report version
 NB. -------------------- Infection factor from false negatives
 
 
-infie=: 3 : '($ y ) $ 1 (((>.  R * 1 rap"0 2 y) ? # s) { (s=: I. (,y=3))) } ,y'
+infie=: 3 : '($ y ) $ 1 (((>. 4+ R * 1 rap"0 2 y) ? # s) { (s=: I. (,y=3))) } ,y'
 
 NB. -------------------- matrix of 1000 schools x 1000 pupils, healty=3, sick=1
 
@@ -100,26 +100,23 @@ NB.                      Usage: n bigtest allschools
 NB.                      Returns lines with quarantine, true positives, false negatives, true negatives, false positives
 
 bigtest=: dyad define
-quar=. 1000 1000 $ 13
+quar=. 1000 1000 $ 4			NB. 4 0 _4 cycles every three loops, average 9 days quarantine 
 i=. 0
 z=. 0 0 0 0 0
 a=.y
 while. i <x do.
 b=. testround a
 a=. filter b
-quar=. quar - 3*(-.b=a)
-a=. 3 (<"0 quar < 0) } a
-quar=. 13 (<"0 quar < 0) } quar
-
+quar=. quar - 4*(-.b=a)
+a=. (1000 1000) $ 3 (I. (,quar)<0) }  (,a)
+quar=. (1000 1000) $  4 (I. (,quar) <0) } ,quar
 (": , b) fappends <'/home/dg/flapje.txt'
-r=. 100 100 {. b
+r=. 200 200 {. b
 (r{col) writeppm <'/home/dg/px/', (": i ), '.ppm'
-
 a=. infie a
 z=. z, nnrap b
 smoutput i
 smoutput nnrap b
-
 i=.i+1
 end.
 1}. (x , 5) $ z
@@ -135,7 +132,6 @@ pd 'reset'
 pd 'title COVID19 pre-emptive testing, large scale implementation'
 pd 'xcaption Number of test runs'
 pd 'ycaption People in Q or tested TP, FN, FP'
-
 pd 'text 550 600 ', cap2
 pd 'text 550 550 ', cap1
 pd 'text 550 500 ', cap3
