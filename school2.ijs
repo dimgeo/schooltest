@@ -1,22 +1,44 @@
 NB. minimalistic covid19 mass testing simulator
 load 'viewmat'
 load 'plot'
-load 'color16'
 
 NB. -------------------- setup PCR simulation parameters and initial prevalence
 
 spec=: 0.998
 sens=: 0.95
 prev=: 0.007
-R=: 10        NB. No, not that R
+R=: 10
 
+
+NB. -------------------- Color stuff
+
+red=: 255 0 0
+green =: 0 255 0
+gray=: 200 200 200
+blue=: 0 0 255
+bla=: 0 127 127
+blo=: 127 127 0
+black=: 0 0 0
+
+
+col=: 5 3 $ blue, black, green, gray,red
+
+makeRGB=: 0&$: : (($,)~ ,&3)
+fillRGB=: makeRGB }:@$
+setPixels=: (1&{::@[)`(<"1@(0&{::@[))`]}
+getPixels=: <"1@[ { ]
+viewRGB=: [: viewrgb 256&#.
+
+
+writeppm =: dyad define
+   header =. 'P6',LF,(":1 0{$x),LF,'255',LF
+  (header,,x{a.) fwrite y
+)
 
 
 NB. -------------------- Consolidation filter to move TP and FP to quarantine (1,4->0) and FN to TP (2->1)
 
 filter=: (- =&2) @ (] * 1 i. ]) ] * 4 i. ]
-
-
 
 
 
@@ -32,10 +54,9 @@ nnrap =: 3 : '0 1 2 3 4 rap"0 2  y'   NB. easy full report version
 NB. -------------------- Infection factor from false negatives
 
 
-infie=: 3 : '(1000, 1000) $ 1 ((>. R * 1 rap"0 2 y) {. (I. (,y=3))) } ,y'
+infie=: 3 : '($ y ) $ 1 (((>.  R * 1 rap"0 2 y) ? # s) { (s=: I. (,y=3))) } ,y'
 
-
-NB. -------------------- matrix of 1000 schools x 1000 pupils, healthy=3, sick=1
+NB. -------------------- matrix of 1000 schools x 1000 pupils, healty=3, sick=1
 
 allschools =: (?1000#1000)|."0 1  (1 ((prev*1000)? 1000)}"1 1  ( 1000 1000 $ 3))
 
@@ -47,21 +68,21 @@ NB.                      postest returns true positive depending on sens setting
 NB.			 negtest returns true positive depending on spec setting
 			 
 
-postest=:  3 : '1:`2: @. (=&1)" 0 (?1000) > (sens * 1000)'    NB. 1: TP 2:FN 3:TN 4:
-negtest=:  3 : '3:`4: @. (=&1)"0 (?1000) > (spec *1000 )'
+postest=:  3 : '1:`2: @. (=&1)" 0 (?100000) > (sens * 100000)'    NB. 1: TP 2:FN 3:TN 4:
+negtest=:  3 : '3:`4: @. (=&1)"0 (?100000) > (spec *100000 )'
 
 NB. -------------------- Test 1000000 school children
 NB. 			 Usage: testround allschools 
-NB.			 Gerund function, visits each matrix cell, checks wether in quarantine, tp, fn, tn, fp
-NB. 			 If tp(1) or tn(3) (posterior, after quarantine and consolidation) runs tests, or else returns input
+NB.			 Gerund function, visits each matrix cell, checks wether in quarantaine, tp, fn, tn, fp
+NB. 			 If tp(1) or tn(3) (posterior, after quarantaine and consolidation) runs tests, or else returns input
 
-testround=:  0:`(postest)`(])`(negtest)`(])  @. (])"0                                     
+testround=:  (])`(postest)`(])`(negtest)`(])  @. (])"0                                     
 
 
 NB. -------------------- Experiment
 NB.                      First testround, without consolidation
 
- newmat=: testround allschools    	  NB. Runs full test
+NB. newmat=: testround allschools    	  NB. Runs full test
 NB. 
 NB. nnrap filter newmat               	  NB. reports consolidated totals
 NB. nnrap filter testround allschools 	  NB. reports consolidated totals on new test
@@ -72,24 +93,34 @@ NB. filter testround  ^:20 allschools	  NB. does 10 consolidated test rounds on 
 NB.        		       			  NB. This basically simulates 10 rounds of mass testing of 1000000 schoolchildren
 
 
+
+
 NB. -------------------- Full simulation
 NB.                      Usage: n bigtest allschools
 NB.                      Returns lines with quarantine, true positives, false negatives, true negatives, false positives
 
 bigtest=: dyad define
 quar=. 1000 1000 $ 13
-i=. >:x
+i=. 0
 z=. 0 0 0 0 0
 a=.y
-while. i > 1 do.
+while. i <x do.
 b=. testround a
 a=. filter b
-quar=. quar - 3*(a=0)
-a=.3 (<"0 quar < 0) } a
+quar=. quar - 3*(-.b=a)
+a=. 3 (<"0 quar < 0) } a
 quar=. 13 (<"0 quar < 0) } quar
+
+(": , b) fappends <'/home/dg/flapje.txt'
+r=. 100 100 {. b
+(r{col) writeppm <'/home/dg/px/', (": i ), '.ppm'
+
 a=. infie a
 z=. z, nnrap b
-i=.i-1
+smoutput i
+smoutput nnrap b
+
+i=.i+1
 end.
 1}. (x , 5) $ z
 )
@@ -101,13 +132,13 @@ cap2=: 'Spec ', (": spec),', Sens ' ,(":sens)
 cap3=: 'Test group size 1 million'
 plotme=: verb define
 pd 'reset'
-pd 'title COVID19 mass testing implications'
-pd 'xcaption Full population test runs'
+pd 'title COVID19 pre-emptive testing, large scale implementation'
+pd 'xcaption Number of test runs'
 pd 'ycaption People in Q or tested TP, FN, FP'
 
-pd 'text 500 600 ', cap2
-pd 'text 500 550 ', cap1
-pd 'text 500 500 ', cap3
+pd 'text 550 600 ', cap2
+pd 'text 550 550 ', cap1
+pd 'text 550 500 ', cap3
 pd 'key "Quarantine" "True Positives" "False Negatives" "False Positives" "True negatives"  '
 pd 'pensize 4'
 lows=:  0 1 2 4 { |: zz
@@ -122,4 +153,21 @@ pd (i. #zz);highs
 NB. --------------------  Convenience function
 runsim=: monad define
 zz=: y bigtest allschools
+)
+
+
+NB. -------------------- Dutch report code
+ 
+rapport=: monad define
+header=: 'testronde';'quarantaine';'juist positief';'fout negatief';'juist negatief';'fout positief'
+boxed=: <"0 (i. #zz) ,"0 1 zz
+
+smoutput ''
+smoutput ''
+smoutput 'Testpopulatie 1 miljoen VO leerlingen'
+smoutput'Testfrequentie 3 dagen'
+smoutput 'Specificiteit: ',": spec
+smoutput 'Sensitiviteit: ', ":sens
+smoutput 'Prevalentie: ' ,": prev
+header, boxed
 )
