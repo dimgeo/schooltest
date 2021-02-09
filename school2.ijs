@@ -7,7 +7,7 @@ NB. -------------------- setup PCR simulation parameters and initial prevalence
 spec=: 0.96
 sens=: 0.80
 prev=: 0.007
-R=: 4
+R=: 1.2
 
 
 NB. -------------------- Color stuff
@@ -108,7 +108,7 @@ while. i <x do.
 b=. testround a
 a=. filter b
 quar=. quar - 4*(-.a=b)
-quar=.   quar     -  4* (quar<13)  
+quar=.   quar     -  4* (quar<13)                     NB. quarantaine ledger, needs independent routine
 a=. (1000 1000) $ 3 (I. (,quar)<0) }  (,a)
 quar=. (1000 1000) $  16 (I. (,quar) <0) } ,quar
 NB. (": , b) fappends <'/home/dg/flapje.txt'
