@@ -4,10 +4,10 @@ load 'plot'
 
 NB. -------------------- setup PCR simulation parameters and initial prevalence
 
-spec=: 0.998
-sens=: 0.95
+spec=: 0.96
+sens=: 0.80
 prev=: 0.007
-R=: 10
+R=: 4
 
 
 NB. -------------------- Color stuff
@@ -54,7 +54,7 @@ nnrap =: 3 : '0 1 2 3 4 rap"0 2  y'   NB. easy full report version
 NB. -------------------- Infection factor from false negatives
 
 
-infie=: 3 : '($ y ) $ 1 (((>. 4+ R * 1 rap"0 2 y) ? # s) { (s=: I. (,y=3))) } ,y'
+infie=: 3 : '($ y ) $ 1 (((>. R * 1 rap"0 2 y) ? # s) { (s=: I. (,y=3))) } ,y'
 
 NB. -------------------- matrix of 1000 schools x 1000 pupils, healty=3, sick=1
 
@@ -100,20 +100,22 @@ NB.                      Usage: n bigtest allschools
 NB.                      Returns lines with quarantine, true positives, false negatives, true negatives, false positives
 
 bigtest=: dyad define
-quar=. 1000 1000 $ 4			NB. 4 0 _4 cycles every three loops, average 9 days quarantine 
+quar=. 1000 1000 $ 16		NB. 4 0 _4 cycles every three loops, average 9 days quarantine 
 i=. 0
 z=. 0 0 0 0 0
 a=.y
 while. i <x do.
 b=. testround a
 a=. filter b
-quar=. quar - 4*(-.b=a)
+quar=. quar - 4*(-.a=b)
+quar=.   quar     -  4* (quar<13)  
 a=. (1000 1000) $ 3 (I. (,quar)<0) }  (,a)
-quar=. (1000 1000) $  4 (I. (,quar) <0) } ,quar
-(": , b) fappends <'/home/dg/flapje.txt'
-r=. 200 200 {. b
-(r{col) writeppm <'/home/dg/px/', (": i ), '.ppm'
+quar=. (1000 1000) $  16 (I. (,quar) <0) } ,quar
+NB. (": , b) fappends <'/home/dg/flapje.txt'
 a=. infie a
+r=. 200 200 {. a
+(r{col) writeppm <'/home/dg/px/', (": i ), '.ppm'
+
 z=. z, nnrap b
 smoutput i
 smoutput nnrap b
