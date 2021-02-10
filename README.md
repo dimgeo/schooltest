@@ -1,6 +1,13 @@
 # schooltest
 Crude simulation of COVID19 mass testing at schools given disease prevalence
 
+school.ijs: Initial application
+school2.ijs: Main project
+
+
+school1.ijs: 
+===========
+
 Use examples like: 
 
 School Blue: 1000 children, 7 are sick (low prevalence)
@@ -21,6 +28,11 @@ simulate red         -- runs a test on all 'schoolchildren' of school red and re
 psim red	        	 -- returns the totals in a boxed frame
 
 1001 ltest blue      -- runs a simulation of 1001 schools of the blue type (low prevalence)
+
+school2.ijs
+===========
+
+Usage: runsim 10 for ten testrounds
 
 
 
