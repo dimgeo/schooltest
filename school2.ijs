@@ -4,11 +4,15 @@ load 'plot'
 
 NB. -------------------- setup PCR simulation parameters and initial prevalence
 
-spec=: 0.96
-sens=: 0.80
-prev=: 0.007
-R=: 1.2
+9!:43 (4)
 
+spec=: 0.998
+sens=: 0.95
+prev=: 0.007
+R=: 0.3
+quarantine_days=. 10
+
+testing_freq=: 2
 
 NB. -------------------- Color stuff
 
@@ -58,7 +62,7 @@ infie=: 3 : '($ y ) $ 1 (((>. R * 1 rap"0 2 y) ? # s) { (s=: I. (,y=3))) } ,y'
 
 NB. -------------------- matrix of 1000 schools x 1000 pupils, healty=3, sick=1
 
-allschools =: (?1000#1000)|."0 1  (1 ((prev*1000)? 1000)}"1 1  ( 1000 1000 $ 3))
+allschools =: (? 1000#1000)|."0 1  (1 ((prev*1000)? 1000)}"1 1  ( 1000 1000 $ 3))
 
 NB.            ^^^ random position ^^^^^ 7% of 3's -> 1         ^^ 1000x1000 matrix with 3's
 
@@ -68,8 +72,8 @@ NB.                      postest returns true positive depending on sens setting
 NB.			 negtest returns true positive depending on spec setting
 			 
 
-postest=:  3 : '1:`2: @. (=&1)" 0 (?100000) > (sens * 100000)'    NB. 1: TP 2:FN 3:TN 4:
-negtest=:  3 : '3:`4: @. (=&1)"0 (?100000) > (spec *100000 )'
+postest=:  3 : '1:`2: @. (=&1)" 0 (? 100000) >: (sens * 100000)'    NB. 1: TP 2:FN 3:TN 4:
+negtest=:  3 : '3:`4: @. (=&1)"0 (? 100000) >: (spec *100000 )'
 
 NB. -------------------- Test 1000000 school children
 NB. 			 Usage: testround allschools 
@@ -100,28 +104,27 @@ NB.                      Usage: n bigtest allschools
 NB.                      Returns lines with quarantine, true positives, false negatives, true negatives, false positives
 
 bigtest=: dyad define
-quar=. 1000 1000 $ 16		NB. 4 0 _4 cycles every three loops, average 9 days quarantine 
+quar=. 1000 1000 $ quarantine_days
+test_days=. x
 i=. 0
 z=. 0 0 0 0 0
 a=.y
-while. i <x do.
+for_i. i. test_days do.
+a=. (1000 1000) $ 3 (back=.I. (,quar)<0) }  (,a)
+quar=. (1000 1000) $  quarantine_days (back) } ,quar
+if. 0=testing_freq|i do.
 b=. testround a
 a=. filter b
-quar=. quar - 4*(-.a=b)
-quar=.   quar     -  4* (quar<13)                     NB. quarantaine ledger, needs independent routine
-a=. (1000 1000) $ 3 (I. (,quar)<0) }  (,a)
-quar=. (1000 1000) $  16 (I. (,quar) <0) } ,quar
-NB. (": , b) fappends <'/home/dg/flapje.txt'
-a=. infie a
 r=. 200 200 {. a
 (r{col) writeppm <'/home/dg/px/', (": i ), '.ppm'
-
 z=. z, nnrap b
 smoutput i
 smoutput nnrap b
-i=.i+1
 end.
-1}. (x , 5) $ z
+quar=. quar - (a=0)
+a=. infie a
+end.
+1}. ((>.test_days%testing_freq) , 5) $ z
 )
 
 NB. -------------------- plots
@@ -134,6 +137,7 @@ pd 'reset'
 pd 'title COVID19 pre-emptive testing, large scale implementation'
 pd 'xcaption Number of test runs'
 pd 'ycaption People in Q or tested TP, FN, FP'
+pd 'keypos bre'
 pd 'text 550 600 ', cap2
 pd 'text 550 550 ', cap1
 pd 'text 550 500 ', cap3
@@ -150,22 +154,39 @@ pd (i. #zz);highs
 
 NB. --------------------  Convenience function
 runsim=: monad define
-zz=: y bigtest allschools
+zz=:  y bigtest allschools
 )
 
 
 NB. -------------------- Dutch report code
  
 rapport=: monad define
-header=: 'testronde';'quarantaine';'juist positief';'fout negatief';'juist negatief';'fout positief'
-boxed=: <"0 (i. #zz) ,"0 1 zz
+header=: 'testronde';'quarantaine';'juist positief';'fout negatief';'juist negatief';'fout positief';'% fout positief';'gemiste schooldagen qrc';'ouders qrc'
+NB. header=: 'testronde';'juist positief';'fout negatief';'juist negatief';'fout positief'
+rapzz=. y
+smoutput kt=. +/\ quarantine_days * 4{"1 rapzz 
+smoutput qt=. +/\2 * quarantine_days * 4{"1 rapzz 
+fapo=.  >. 100 * (4{"1 rapzz) % (4{"1 rapzz + 1{"1 rapzz)
+
+rapzz=. ((rapzz,.fapo),.kt),.qt
+boxed=. <"0 (i. #rapzz) ,"0 1 rapzz
 
 smoutput ''
 smoutput ''
 smoutput 'Testpopulatie 1 miljoen VO leerlingen'
-smoutput'Testfrequentie 3 dagen'
+smoutput 'Testfrequentie: ', (": testing_freq) ,' dagen'
 smoutput 'Specificiteit: ',": spec
 smoutput 'Sensitiviteit: ', ":sens
-smoutput 'Prevalentie: ' ,": prev
+smoutput 'Startprevalentie: ' ,": prev
+smoutput 'gemiste schooldagen qrc: ten onrechte gemiste schooldagen (cumulatief)'
+smoutput 'ouders qrc: 2 ouders, ',( ": quarantine_days) , ' dagen ten onrechte in quarantaine (cumulatief)'
+smoutput '            op basis van fout positieve uitslag kind'
+
 header, boxed
+)
+
+test=: monad define
+for_i. i. 10 do.
+smoutput i
+end.
 )
