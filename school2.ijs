@@ -93,8 +93,8 @@ NB. nnrap filter testround allschools 	  NB. reports consolidated totals on new 
 NB. 
 NB. filter testround allschools  		  NB. returns complete matrix (not very informative)
 NB. 
-NB. filter testround  ^:20 allschools	  NB. does 10 consolidated test rounds on entire population
-NB.        		       			  NB. This basically simulates 10 rounds of mass testing of 1000000 schoolchildren
+NB. filter testround  ^:20 allschools	  NB. does 20 consolidated test rounds on entire population
+NB.        		       	          NB. This basically simulates 10 rounds of mass testing of 1000000 schoolchildren
 
 
 
