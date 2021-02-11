@@ -68,8 +68,8 @@ NB.            ^^^ random position ^^^^^ 7% of 3's -> 1         ^^ 1000x1000 mat
 
 
 NB. -------------------- PCR simulator
-NB.                      postest returns true positive depending on sens setting
-NB.			 negtest returns true positive depending on spec setting
+NB.                      postest returns true positive / false negative depending on sens setting
+NB.			 negtest returns truu negative / false positive on spec setting
 			 
 
 postest=:  3 : '1:`2: @. (=&1)" 0 (? 100000) >: (sens * 100000)'    NB. 1: TP 2:FN 3:TN 4:
