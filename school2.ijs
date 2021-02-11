@@ -10,9 +10,9 @@ spec=: 0.998
 sens=: 0.95
 prev=: 0.007
 R=: 0.3
-quarantine_days=. 10
+quardays=: 10
 
-testing_freq=: 2
+testfreq=: 2
 
 NB. -------------------- Color stuff
 
@@ -68,8 +68,8 @@ NB.            ^^^ random position ^^^^^ 7% of 3's -> 1         ^^ 1000x1000 mat
 
 
 NB. -------------------- PCR simulator
-NB.                      postest returns true positive / false negative depending on sens setting
-NB.			 negtest returns truu negative / false positive on spec setting
+NB.                      postest returns true positive depending on sens setting
+NB.			 negtest returns true positive depending on spec setting
 			 
 
 postest=:  3 : '1:`2: @. (=&1)" 0 (? 100000) >: (sens * 100000)'    NB. 1: TP 2:FN 3:TN 4:
@@ -93,8 +93,8 @@ NB. nnrap filter testround allschools 	  NB. reports consolidated totals on new 
 NB. 
 NB. filter testround allschools  		  NB. returns complete matrix (not very informative)
 NB. 
-NB. filter testround  ^:20 allschools	  NB. does 20 consolidated test rounds on entire population
-NB.        		       	          NB. This basically simulates 10 rounds of mass testing of 1000000 schoolchildren
+NB. filter testround  ^:20 allschools	  NB. does 10 consolidated test rounds on entire population
+NB.        		       			  NB. This basically simulates 10 rounds of mass testing of 1000000 schoolchildren
 
 
 
@@ -104,15 +104,15 @@ NB.                      Usage: n bigtest allschools
 NB.                      Returns lines with quarantine, true positives, false negatives, true negatives, false positives
 
 bigtest=: dyad define
-quar=. 1000 1000 $ quarantine_days
-test_days=. x
+quar=. 1000 1000 $ quardays
+testdays=. x
 i=. 0
 z=. 0 0 0 0 0
 a=.y
-for_i. i. test_days do.
-a=. (1000 1000) $ 3 (back=.I. (,quar)<0) }  (,a)
-quar=. (1000 1000) $  quarantine_days (back) } ,quar
-if. 0=testing_freq|i do.
+for_i. i. testdays do.
+a=. (1000 1000) $ 3 ( back=. I. (, quar) < 0) }  (,a)
+quar=. (1000 1000) $  quardays (back) } ,quar
+if. 0=testfreq|i do.
 b=. testround a
 a=. filter b
 r=. 200 200 {. a
@@ -124,7 +124,7 @@ end.
 quar=. quar - (a=0)
 a=. infie a
 end.
-1}. ((>.test_days%testing_freq) , 5) $ z
+1}. ((>.testdays%testfreq) , 5) $ z
 )
 
 NB. -------------------- plots
@@ -164,8 +164,8 @@ rapport=: monad define
 header=: 'testronde';'quarantaine';'juist positief';'fout negatief';'juist negatief';'fout positief';'% fout positief';'gemiste schooldagen qrc';'ouders qrc'
 NB. header=: 'testronde';'juist positief';'fout negatief';'juist negatief';'fout positief'
 rapzz=. y
-smoutput kt=. +/\ quarantine_days * 4{"1 rapzz 
-smoutput qt=. +/\2 * quarantine_days * 4{"1 rapzz 
+smoutput kt=. +/\ quardays * 4{"1 rapzz 
+smoutput qt=. +/\2 * quardays * 4{"1 rapzz 
 fapo=.  >. 100 * (4{"1 rapzz) % (4{"1 rapzz + 1{"1 rapzz)
 
 rapzz=. ((rapzz,.fapo),.kt),.qt
@@ -174,12 +174,12 @@ boxed=. <"0 (i. #rapzz) ,"0 1 rapzz
 smoutput ''
 smoutput ''
 smoutput 'Testpopulatie 1 miljoen VO leerlingen'
-smoutput 'Testfrequentie: ', (": testing_freq) ,' dagen'
+smoutput 'Testfrequentie: ', (": testfreq) ,' dagen'
 smoutput 'Specificiteit: ',": spec
 smoutput 'Sensitiviteit: ', ":sens
 smoutput 'Startprevalentie: ' ,": prev
 smoutput 'gemiste schooldagen qrc: ten onrechte gemiste schooldagen (cumulatief)'
-smoutput 'ouders qrc: 2 ouders, ',( ": quarantine_days) , ' dagen ten onrechte in quarantaine (cumulatief)'
+smoutput 'ouders qrc: 2 ouders, ',( ": quardays) , ' dagen ten onrechte in quarantaine (cumulatief)'
 smoutput '            op basis van fout positieve uitslag kind'
 
 header, boxed
@@ -190,3 +190,4 @@ for_i. i. 10 do.
 smoutput i
 end.
 )
+
