@@ -185,9 +185,5 @@ smoutput '            op basis van fout positieve uitslag kind'
 header, boxed
 )
 
-test=: monad define
-for_i. i. 10 do.
-smoutput i
-end.
-)
+
 
